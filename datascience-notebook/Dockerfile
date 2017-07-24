@@ -18,15 +18,11 @@ RUN apt-get update && \
 # install Julia packages in /opt/julia instead of $HOME
 ENV JULIA_PKGDIR=/opt/julia
 
-RUN echo "deb http://ppa.launchpad.net/staticfloat/juliareleases/ubuntu trusty main" > /etc/apt/sources.list.d/julia.list && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3D3D3ACC && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-    julia \
-    libnettle4 && apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    # Show Julia where conda libraries are \
-    echo "push!(Libdl.DL_LOAD_PATH, \"$CONDA_DIR/lib\")" >> /usr/etc/julia/juliarc.jl && \
+RUN wget --quiet https://julialang-s3.julialang.org/bin/linux/x64/0.6/julia-0.6.0-linux-x86_64.tar.gz && \
+    echo "973b2c6be566443f84aea216ec4250a745d97829f2fc5a4044e8d81447bafbeec07d5fa75b41c3a30ec1c1189822ccdefc899eeea39feb9f77058826d5d3f036" julia-0.6.0-linux-x86_64.tar.gz | sha512sum -c - && \
+    tar xvf julia-0.6.0-linux-x86_64.tar.gz -C /usr/local/ && \
+    ln -s /usr/local/julia-903644385b/bin/julia /usr/local/bin/julia && \
+    rm julia-0.6.0-linux-x86_64.tar.gz && \
     # Create JULIA_PKGDIR \
     mkdir $JULIA_PKGDIR && \
     chown -R $NB_USER:users $JULIA_PKGDIR
